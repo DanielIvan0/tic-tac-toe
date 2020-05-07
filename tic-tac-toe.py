@@ -5,6 +5,7 @@ import random as rand
 players = ['', '']
 symbols = ['X', 'O']
 currentPlayer = 0
+moves = ('1', '2', '3')
 board = [
     ['']*3,
     ['']*3,
@@ -40,8 +41,8 @@ def chooseFirstPlayer():
 # Iniciar el juego
 def start():
     while True:
-        showBoard()
         insertPlay()
+        showBoard()
         if youWon():
             print('Tú ganaste')
             break
@@ -68,30 +69,50 @@ def changePlayer():
 
 # Ingresar jugada
 def insertPlay():
-    play = input(f'{players[currentPlayer]}, inserte su jugada: ')
-    if len(play) == 2:
-        if play[0] in ('1', '2', '3') and play[1] in ('1', '2', '3'):
-            pass
+    while True:
+        i = input(f'{players[currentPlayer]}, inserte la fila de su jugada: ')
+        j = input(f'{players[currentPlayer]}, inserte la columna de su jugada: ')
+        if i not in moves or j not in moves:
+            print('¡Movimiento inválido!')
+        elif board[int(i) - 1][int(j) - 1] in symbols:
+            print('¡Casilla ocupada!')
         else:
-            pass
-    else:
-        pass
+            board[int(i) - 1][int(j) - 1] = symbols[currentPlayer]
+            break
 
 # Evaluar tablero
 def youWon():
-    # Retorna True si el jugador actual gana
-    # Retorna False en caso contrario
-    pass
+    if rowDetected() or diagonalDetected() or columnDetected():
+        return True
+    return False
+def rowDetected():
+    if [symbols[currentPlayer]]*3 in board:
+        return True
+    return False
+def diagonalDetected():
+    principal = [board[i][i] for i in range(len(board))]
+    secondary = [board[(len(board) - 1) - i][i] for i in range(len(board))]
+    if principal == [symbols[currentPlayer]]*3 or secondary == [symbols[currentPlayer]]*3:
+        return True
+    return False
+def columnDetected():
+    if [symbols[currentPlayer]]*3 in [[board[j][i] for j in range(len(board[i]))] for i in range(len(board))]:
+        return True
+    return False
 
 def fullBoard():
-    # Retorna True si el tablero está vacío
-    # Retorna False en caso contrario
-    pass
+    for row in board:
+        for item in row:
+            if len(item) == 0:
+                return False
+    else:
+        return True
 
 # main function
 def main():
     getPlayers()
     chooseFirstPlayer()
+    showBoard()
     start()
     
 main()
